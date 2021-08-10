@@ -1,0 +1,31 @@
+---
+name: Build and deploy images
+on:
+  schedule:
+    # rebuild every 15th day of the month at 9:24 UTC
+    - cron: '24 9 15 * *'
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+
+permissions:
+  contents: read
+  packages: write
+  actions: read
+
+jobs:
+  build-images:
+    name: Build Docker images
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - id: build
+        uses: Seravo/actions/docker-build-and-release@main
+        name: Build image
+        with:
+          image: ghcr.io/seravo/flask:latest
