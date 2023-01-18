@@ -1,10 +1,10 @@
-FROM ghcr.io/seravo/flask:latest
-
+FROM ghcr.io/seravo/fastapi:latest
 ARG APT_PROXY
+USER user
 
-COPY requirements.txt /app/requirements.txt
+COPY --chown=user:user requirements.txt .
+RUN pip3 install -r requirements.txt
 
-RUN pip install -r /app/requirements.txt
+COPY seravo $APPDIR/seravo/
 
-ENV FLASK_APP hello:app
-COPY /app/ /app/
+CMD ["seravo.main:app"]

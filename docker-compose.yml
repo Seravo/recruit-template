@@ -1,0 +1,14 @@
+version: "3.7"
+
+services:
+  api:
+    image: seravo-api
+    build: .
+    environment:
+      - PYTHONPATH=/app
+    healthcheck:
+      disable: true
+    ports: ["8080:8000"]
+    volumes:
+      - "./seravo/:/app/seravo:rw"
+      - "./tests/:/app/tests:rw"

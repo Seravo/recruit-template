@@ -1,53 +1,107 @@
-# Flask template
+# Seravo development team recruit template
 
-Flask project template
+_We are currently not hiring, but you can still clone the repository, give the tasks a spin, and send us an open application at careers@seravo.com._
 
-## Usage
+## Using the supplied Docker environment with Makefile
 
-To run hello world app, :8080 provides HTTP endpoint (to uWSGI), and :9000 provides uWSGI endpoint. So, let's try accessing via HTTP:
+If you have Docker installed, and are familiar with the `make` command, you can use the following commands to start the development environment.
 
-    docker run --rm -it -v $(pwd)/app:/app -e FLASK_APP=hello:app  -p 127.0.0.1:8080:8080 ghcr.io/seravo/flask:latest
+### Usage
 
-now try to open http://127.0.0.1:8080/ , you should see familiar greeting.
+Run `make develop` to start the container. You can access the API at `localhost:8080`.
 
-To publish your own app, mount your app to `/app`, and provide FLASK_APP environment variable with correct value.
+### Reloading changes
 
-Eg.
+Run `make reload` to reload the gunicorn workers. If you think that your changes are not reflected in the application after the reload, you can run `make develop` again.
 
-    docker run --rm -it -v $(pwd)/app:/app -e FLASK_APP=app:app -p 127.0.0.1:8080:8080 ghcr.io/seravo/flask:latest
+### Cleanin up
 
-if you had app code like
+Run `make purge` to remove the container.
 
-    app/app.py:
+### Tests
 
-    from flask import Flask
-    app = Flask(__name__)
+You can use `make test` to execute tests inside the container.
 
-    @app.route("/")
-    def some_view():
-        return "Hello myapp!"
+## Running FastAPI from the terminal
 
-Usually you shouldn't expose this HTTP endpoint directly to internet, but use eg. `ypcs/nginx:latest` as a reverse proxy.
+Alternatively, you can also run the application from your terminal with `uvicorn`. See [FastAPI docs](https://fastapi.tiangolo.com/#installation) on how to install the required packages.
 
-## Live reload
+Remember to also install the dependencies defined in `requirements.txt`!
 
-By default, you can manually reload the application by touching `/tmp/reload-app`. If you want your application to reload automatically after every save, set `FLASK_RELOAD` as `true`.
+```console
+pip install -r requirements.txt
+```
 
-    docker run --rm -it -v $(pwd)/app:/app -e FLASK_APP=app:app -e FLASK_RELOAD=true -p 127.0.0.1:8080:8080 ghcr.io/seravo/flask:latest
+Finally, run `uvicorn seravo.main:app --reload` to start our base application.
 
-Now, if you modify the code in `app.py` and save, the app will reload and your changes will be in effect.
+You can run the tests with `pytest -vv tests`, granted you have `pytest` installed.
 
-## Tests
+## The tasks
 
-Tests can be ran by executing `pytest-3` inside the container. For example, to run the tests for `hello.py` you would do it like this:
+The tasks should be possible to implement with the given packages in `requirements.txt`. If you want to use a new package (e.g. `requests` instead of `httpx`), you can just add it to the requirements file and use it in your code.
 
-    docker exec -t {CONTAINER_NAME} pytest-3 hello.py -vv
+1. Create a new endpoint `/pokemon/{name}`, which can be accessed with a GET request.
 
-Test output should look something like this:
+   - When triggered, the application queries `https://pokeapi.co/api/v2/pokemon/{name}/` for a JSON blob about the chosen pokemon
+   - Application should handle possible errors
+   - Data should be modified to match the following structure:
 
-    platform linux -- Python 3.9.2, pytest-6.0.2, py-1.10.0, pluggy-0.13.0 -- /usr/bin/python3
-    cachedir: .pytest_cache
-    rootdir: /app
-    collected 1 item
+   ```python
+    name: str
+    height: int
+    weight: int
+    types: List[str]
+   ```
 
-    hello.py::test_hello PASSED
+   - Application returns the modifed JSON blob to the user
+   - So, for example, `/pokemon/pikachu` would return this:
+
+   ```json
+   {
+     "name": "pikachu",
+     "height": 4,
+     "weight": 60,
+     "types": ["electric"]
+   }
+   ```
+
+2. Create a new endpoint `/caps/`, which can be accessed with a POST request.
+
+   - Endpoint can be queried with the following body:
+
+   ```json
+   {
+     "message": "string"
+   }
+   ```
+
+   - The API will return the content of the `message` field in all CAPS.
+   - The API should reject the request if the body does not match the one above
+   - The API should reject the request if there already is a capitalized letter in the data
+
+### Grading
+
+We will give points based on the following criteria:
+
+1. Code readability, code documentation, version control
+2. Code structure: is everything bundled in a single file or distributed
+3. Error handling: HTTP status codes
+4. Test coverage: Were the tests extended to test the new features.
+
+### Helpful links
+
+[Path parameters](https://fastapi.tiangolo.com/tutorial/path-params/)
+
+[Request body](https://fastapi.tiangolo.com/tutorial/body/)
+
+[HTTPX QuickStart](https://www.python-httpx.org/quickstart/)
+
+[HTTPX Async](https://www.python-httpx.org/async/)
+
+[Pydantic validators](https://docs.pydantic.dev/usage/validators/)
+
+[Test mocking](https://docs.pytest.org/en/6.2.x/monkeypatch.html#monkeypatching-returned-objects-building-mock-classes)
+
+## Submitting your work
+
+Set up a private repository with your modifications, share it to @seravo-hrm and notify us at careers@seravo.com with your application and we will get back to you as soon as possible!

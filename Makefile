@@ -1,21 +1,28 @@
 APT_PROXY ?=
-DOCKER ?= docker
-IMAGE ?= ypcs/FIXME:latest
-CONTAINER ?= FIXME
+SUDO ?=
 
 all:
 
-clean:
-	$(DOCKER) rm -f "$(CONTAINER)" || :
+purge:
+	$(SUDO) docker-compose down -v --remove-orphans
+
+stop:
+	$(SUDO) docker-compose down
 
 build:
-	$(DOCKER) build --build-arg APT_PROXY="$(APT_PROXY)" -t $(IMAGE) .
+	$(SUDO) docker-compose build
 
-run: clean
-	$(DOCKER) run --name "$(CONTAINER)" --rm --volume "$(shell pwd)/app/:/app/:ro" -p 127.0.42.1:8080:8080 -d $(IMAGE)
+run: build
+	$(SUDO) docker-compose up -d
+
+develop: run
+	$(SUDO) docker-compose logs --follow
+
+test:
+	@$(SUDO) docker-compose exec api pytest tests -vv
 
 reload:
-	$(DOCKER) exec "$(CONTAINER)" touch /tmp/reload-app
+	@$(SUDO) docker-compose exec api reload-gunicorn
 
-logs:
-	$(DOCKER) logs "$(CONTAINER)"
+exec:
+	@$(SUDO) docker-compose exec api bash
