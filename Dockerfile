@@ -1,4 +1,4 @@
-FROM ghcr.io/seravo/fastapi:latest
+FROM seravo/fastapi:latest
 ARG APT_PROXY
 USER user
 
