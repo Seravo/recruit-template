@@ -18,23 +18,19 @@ Run `make reload` to reload the gunicorn workers. If you think that your changes
 
 Run `make purge` to remove the container.
 
+### Virtual environment
+
+Run `make ve` to create the virtual environment.
+
 ### Tests
 
-You can use `make test` to execute tests inside the container.
+You can use `make unittest` to execute tests inside the virtual environment.
 
 ## Running FastAPI from the terminal
 
 Alternatively, you can also run the application from your terminal with `uvicorn`. See [FastAPI docs](https://fastapi.tiangolo.com/#installation) on how to install the required packages.
 
-Remember to also install the dependencies defined in `requirements.txt`!
-
-```console
-pip install -r requirements.txt
-```
-
-Finally, run `uvicorn seravo.main:app --reload` to start our base application.
-
-You can run the tests with `pytest -vv tests`, granted you have `pytest` installed.
+You can then run `./ve/bin/uvicorn seravo.main:app --reload` to start our base application.
 
 ## The tasks
 
